@@ -28,14 +28,50 @@ class Player extends React.Component {
     constructor(props){
         super(props);
         this.state={
-          currentSongUrl: '',
-          isLogged: false
-        }
+          currentSongUrl: null,
+          isLogged: false,
+          count:0
+        };
         this.handleAudio = this.handleAudio.bind(this);
+        this.nextTrack = this.nextTrack.bind(this);
     } 
 
-    handleAudio() {
-        console.log("ended")
+    nextTrack(songs) {
+        let myCount = this.state.count
+        if(songs.length > 0)
+        {
+            myCount++;
+            while(songs[myCount].url == null)
+            {
+                myCount++;
+            } 
+        }
+        this.setState({
+            count:myCount,
+            currentSongUrl:songs[myCount].url,
+            
+        }, () => console.log(this.state.currentSongUrl))
+
+        console.log("nextTrack done")
+    }
+
+    handleAudio(songs) {
+        console.log("handle audio start")
+        let myCount = this.state.count
+        if(songs.length > 0)
+        {
+            while(songs[myCount].url == null)
+            {
+                myCount++;
+            } 
+        }
+        this.setState({
+            count:myCount,
+            currentSongUrl:songs[myCount].url,
+
+        }, () => console.log("im setting state"))
+
+        console.log("handle audio done")
     }
     
     //randomSongPlayer
@@ -43,7 +79,6 @@ class Player extends React.Component {
        
         let songs = this.props.selectedPlaylist
         console.log(songs)
-        let count = 0;
        
         if(songs == null)
         {
@@ -51,21 +86,15 @@ class Player extends React.Component {
         }
         if(songs.length > 0)
         {
-            while(songs[count].url == null)
+            if(this.state.currentSongUrl == null || this.state.currentSongUrl == '')
             {
-                count++;
+                this.handleAudio(songs)
             } 
-
-            let refreshState = 
-                !this.state.isLogged ? this.setState({
-                    currentSongUrl: songs[count].url,
-                    isLogged: true
-                }) : null
-                        
-            return <audio audioPlayer controls src = {this.state.currentSongUrl} onEnded=
-                {() => this.handleAudio()}
-               
-            > </audio>
+     
+            return <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
+                {() => this.nextTrack(songs)}
+        
+            > {console.log(this.state.currentSongUrl)}</audio>
             
         }
         else{
@@ -189,8 +218,7 @@ class Select extends React.Component {
             filterString: playlist.name,
         });
         console.log("clicked")
-        console.log(this.state.songsList)
-
+        
     }
 
     render() {
