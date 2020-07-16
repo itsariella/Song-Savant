@@ -90,11 +90,17 @@ class Player extends React.Component {
             {
                 this.handleAudio(songs)
             } 
+            
      
-            return <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
-                {() => this.nextTrack(songs)}
-        
-            > {console.log(this.state.currentSongUrl)}</audio>
+            return [<audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
+                        {() => this.nextTrack(songs)}> {console.log(this.state.currentSongUrl)}
+                    </audio>, 
+                    <div> {<form onSubmit = {() => this.nextTrack(songs)}>
+                        <input placeholder="Enter song name or artist"></input>
+                        <button type="submit"> submit </button>
+                        </form>} 
+                    </div>
+                    ]
             
         }
         else{
@@ -234,6 +240,7 @@ class Select extends React.Component {
                 return matchesPlaylist || matchesSong
             }) : []
 
+            var self = this;
 
         return (
         <div>
@@ -250,10 +257,12 @@ class Select extends React.Component {
 
             {
                 <div>
-                    {this.state.clicked && <Player selectedPlaylist = {this.state.songsList}/>}
+                    {this.state.clicked && <Player elementId = "myPlayer" selectedPlaylist = {this.state.songsList}/>}
                     {this.state.isEmptyState && <h3> Select a playlist:  </h3> }
+                   
                 </div>
             }
+            
 
            {/* Renders playlist after using filter, learn to use shouldComponentUpdate */}
             <Filter onTextChange={text => {
