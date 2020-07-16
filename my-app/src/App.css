@@ -63,3 +63,12 @@
 body {
   background-color: #F0FFFF;
 }
+
+.songCard {
+  margin: 20px;
+  width: 175px;
+  align-items:center;
+  display: inline-block;
+  border: none;
+  background-color:transparent;
+}
