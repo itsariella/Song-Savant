@@ -1,123 +1,93 @@
 import React from 'react';
 import queryString from 'query-string';
+import Directions from './Directions';
 import '../App.css';
 
 
 let defaultStyle = {
-    color: 'ddd'
+    color: 'ddd',
 };
 
-let fakeServerData = {
-    user: {
-        name: 'Ariella',
-        playlists: [
-        {
-            name: 'My favorites',
-            songs: [{name:'s1',duration:1}, {name:'s2', duration: 1}, {name:'s3', duration: 1}]
-        },
-        {
-            name: 'Discovery Weekly',
-            songs: [{name:'s4',duration:1}, {name:'s5', duration: 1}, {name:'s6', duration: 1}]
-        },
-        {
-             name: 'Chill',
-             songs: [{name:'s7',duration:1}, {name:'s8', duration: 1}, {name:'s9', duration: 1}]
-        }
-        ]
-    }
-}
-
-class PlaylistCounter extends React.Component {
-    render() {
-        return(
-            <div style={{...defaultStyle, width: "40", display: "inline-block"}}>
-                <h2> {this.props.playlists && this.props.playlists.length} Playlists </h2>
-            </div>
-
-        );
-    }
-}
-
-class Player extends React.Component {
-    render() {
-        let playlist = this.props.playlist
-        return(
-            <div style={{...defaultStyle, display: 'inline-block', width: "25%"}}>
-                <audio controls src = {this.state.currSong.url}> 
-                    Your browser does not support the <code>audio</code> element.
-                </audio>
-                {/* 
-
-                playlists are on buttons
-                select playlist
-                get playlist url
-                get tracks url
-                randomly play in audio player
-                
-                
-                */}
-               { console.log(this.props.playlist) }
-                
-                <ul>
-                    {this.props.playlist.songs.map(song =>
-                        <li>{song.name} </li>
-                    )}
-                </ul>
-            </div>
-        );
-    }
-}
-
-class Directions extends React.Component {
-    render() {
-      return (
-        <div id = "Directions">
-          <p>
-                Here's how it works: Select a playlist. When the song plays, try to enter the title as fast as you can. See how many songs you can enter before time’s up!
-
-          </p>
-          <p>
-                Test your knowledge! 
-            </p>
-        </div>
-        
-      );
-    }
-  }
-
-  {/* Returns pla */}
+  {/* Narrow down a playlist */}
 class Filter extends React.Component {
     render() {
       return (
         <div style={defaultStyle}>
           <img/>
-          { <input type="text" onKeyUp={event => 
-            this.props.onTextChange(event.target.value)}/> }
+          {/* <input type="text" onKeyUp={event => 
+            this.props.onTextChange(event.target.value)}/> 
+            */
+          }
         </div>
       );
     }
   }
 
+class Player extends React.Component {
+
+    constructor(props){
+        super(props);
+        this.state={
+          currentSongUrl: '',
+          isLogged: false
+        }
+        this.handleAudio = this.handleAudio.bind(this);
+    } 
+
+    handleAudio() {
+        console.log("ended")
+    }
+    
+    //randomSongPlayer
+    render() {
+       
+        let songs = this.props.selectedPlaylist
+        console.log(songs)
+        let count = 0;
+       
+        if(songs == null)
+        {
+            return <h2>Error! No playlists retrieved! </h2>
+        }
+        if(songs.length > 0)
+        {
+            while(songs[count].url == null)
+            {
+                count++;
+            } 
+
+            let refreshState = 
+                !this.state.isLogged ? this.setState({
+                    currentSongUrl: songs[count].url,
+                    isLogged: true
+                }) : null
+                        
+            return <audio audioPlayer controls src = {this.state.currentSongUrl} onEnded=
+                {() => this.handleAudio()}
+               
+            > </audio>
+            
+        }
+        else{
+            return <h2> Error! No songs retrieved! </h2>
+        }
+    }
+}   
+
 class Playlist extends React.Component {
+
+    constructor(){
+        super();
+    }
+
     render() {
         let playlist = this.props.playlist
         return(
-            <div style={{...defaultStyle, display: 'inline-block', width: "25%"}}>
-
-                {/*
+            <div>
                 
-                    ideally, we do not use the spotify album covers, make custom images
-
-                */}
-                
-                <button>
                 <img src={playlist.imageUrl} style={{width: '150px', height: '150px'}}/>
-                </button>
 
                 <h3> {this.props.playlist.name} </h3>
-                
-               { console.log(this.props.playlist) }
-                
                 {/*
                 
                 <ul>
@@ -136,12 +106,20 @@ class Playlist extends React.Component {
 
 class Select extends React.Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             serverData: {}, 
-            filterString: ''
-        }
+            filterString: '',
+            songSelectedUrl: '',
+            songsList: {},
+            clicked: false,
+            isEmptyState: true,
+            isLogged: false,
+            chosenPlaylist: '',
+    };
+
+        this.handlePlaylist = this.handlePlaylist.bind(this);
     }
 
     componentDidMount(){
@@ -195,15 +173,28 @@ class Select extends React.Component {
                return {
                    name: item.name,
                    imageUrl: item.images[0].url,
-                   songs: item.trackDatas.slice(0,3) // dont have to slice
+                   songs: item.trackDatas
                 }
             })
         }))
     
     }
 
-    render() {
+    handlePlaylist(playlist) {
+       
+        this.setState({
+            clicked: true,
+            isEmptyState: false,
+            songsList: playlist.songs,
+            filterString: playlist.name,
+        });
+        console.log("clicked")
+        console.log(this.state.songsList)
 
+    }
+
+    render() {
+        
         let playlistToRender = 
         this.state.user && 
         this.state.playlists 
@@ -215,26 +206,46 @@ class Select extends React.Component {
                 return matchesPlaylist || matchesSong
             }) : []
 
+
         return (
         <div>
             {this.state.user ?
             <div>
                 <p>
-                    <h1 >
-                        Welcome, {this.state.user.name}!
+                    <h1>
+                        Welcome, {this.state.user.name.split(" ").shift()}! 
                         {console.log(this.state.user)}
                     </h1>
                 </p>   
 
             <Directions></Directions>
-           
-           {/* Renders playlist after using filter */}
+
+            {
+                <div>
+                    {this.state.clicked && <Player selectedPlaylist = {this.state.songsList}/>}
+                    {this.state.isEmptyState && <h3> Select a playlist:  </h3> }
+                </div>
+            }
+
+           {/* Renders playlist after using filter, learn to use shouldComponentUpdate */}
             <Filter onTextChange={text => {
                 this.setState({filterString: text})
                 }}/>
-            {playlistToRender.map(playlist => 
-                <Playlist playlist={playlist} />
+            {
+            playlistToRender.map(playlist => 
+                
+                <button className="songCard" onClick={() => this.handlePlaylist(playlist)}>
+
+                    {this.state.clicked && !this.state.isLogged ? this.setState(
+                        { 
+                            isLogged: true,
+                        }): console.log(playlist)
+                    }
+                    
+                    <Playlist playlist={playlist} />
+                </button>
             )}
+            
             </div> : <button onClick={() => {
             window.location = window.location.href.includes('localhost') 
               ? 'http://localhost:8888/login' 
