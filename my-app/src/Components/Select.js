@@ -29,15 +29,30 @@ class Player extends React.Component {
         super(props);
         this.state={
           currentSongUrl: null,
+          currentSongName: "",
+          currentSongArtist: "",
           isLogged: false,
-          count:0
+          count:0,
+          score: 0,
         };
         this.handleAudio = this.handleAudio.bind(this);
         this.nextTrack = this.nextTrack.bind(this);
+        this.userSubmit = this.nextTrack.bind(this);
+        this.myInput = React.createRef();
     } 
 
     nextTrack(songs) {
         let myCount = this.state.count
+        let matchesSong = this.state.currentSongName.normalize("NFD").toLowerCase().replace(/[.,'\/?#!$%\^&\*;:{}=\_`~\s]/g,"")
+        
+        if(matchesSong.includes('-'))
+        {
+            matchesSong = matchesSong.split('-')[0].trim();
+        }
+        else if(matchesSong.includes('('))
+        {
+            matchesSong = matchesSong.split('(')[0].trim();
+        }
         if(songs.length > 0)
         {
             myCount++;
@@ -46,11 +61,20 @@ class Player extends React.Component {
                 myCount++;
             } 
         }
+        if(this.myInput.value.normalize("NFD").toLowerCase().replace(/[.,'\/?#!$%\^&\*;:{}=\_`~\s]/g,"").trim() == matchesSong)
+        {
+            this.setState({score: this.state.score + 1}, () => console.log(this.state.score));
+        }
+        this.myInput.value = "";
+        console.log(this.myInput.value);
+        console.log(matchesSong);
         this.setState({
+            match: false,
             count:myCount,
             currentSongUrl:songs[myCount].url,
+            currentSongName: songs[myCount].name,
             
-        }, () => console.log(this.state.currentSongUrl))
+        }, () => console.log(songs[myCount].name))
 
         console.log("nextTrack done")
     }
@@ -68,8 +92,10 @@ class Player extends React.Component {
         this.setState({
             count:myCount,
             currentSongUrl:songs[myCount].url,
+            currentSongName: songs[myCount].name
 
         }, () => console.log("im setting state"))
+
 
         console.log("handle audio done")
     }
@@ -78,7 +104,6 @@ class Player extends React.Component {
     render() {
        
         let songs = this.props.selectedPlaylist
-        console.log(songs)
        
         if(songs == null)
         {
@@ -90,11 +115,22 @@ class Player extends React.Component {
             {
                 this.handleAudio(songs)
             } 
+            
      
-            return <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
-                {() => this.nextTrack(songs)}
-        
-            > {console.log(this.state.currentSongUrl)}</audio>
+            return [<h2> Score: {this.state.score} </h2>,
+                    <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
+                        {() => this.nextTrack(songs)}> {console.log(this.state.currentSongUrl)}
+                    </audio>, 
+                    <div> {
+                    <form onSubmit = {() => this.userSubmit(songs)}>
+                        <input
+                            ref={input => {this.myInput = input;}} 
+                            placeholder="Enter song name">
+                        </input>
+                        <button type="submit"> submit </button>
+                    </form>} 
+                    </div>
+                    ]
             
         }
         else{
@@ -234,6 +270,7 @@ class Select extends React.Component {
                 return matchesPlaylist || matchesSong
             }) : []
 
+            var self = this;
 
         return (
         <div>
@@ -250,10 +287,12 @@ class Select extends React.Component {
 
             {
                 <div>
-                    {this.state.clicked && <Player selectedPlaylist = {this.state.songsList}/>}
+                    {this.state.clicked && <Player elementId = "myPlayer" selectedPlaylist = {this.state.songsList}/>}
                     {this.state.isEmptyState && <h3> Select a playlist:  </h3> }
+                   
                 </div>
             }
+            
 
            {/* Renders playlist after using filter, learn to use shouldComponentUpdate */}
             <Filter onTextChange={text => {
