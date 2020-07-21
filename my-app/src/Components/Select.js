@@ -34,17 +34,40 @@ class Player extends React.Component {
           isLogged: false,
           count:0,
           score: 0,
+          correct: false,
+          submitted: false,
+          
         };
         this.handleAudio = this.handleAudio.bind(this);
         this.nextTrack = this.nextTrack.bind(this);
-        this.userSubmit = this.nextTrack.bind(this);
+        this.randomNumber = this.randomNumber.bind(this);
         this.myInput = React.createRef();
+        this.arrNums = [];
     } 
 
-    nextTrack(songs) {
-        let myCount = this.state.count
+    randomNumber(min, max) {  
+        let myCount = parseInt(Math.random() * (max - min) + min); 
+        while(this.arrNums.indexOf(myCount) != -1) {
+            myCount = parseInt(Math.random() * (max - min) + min); 
+        }
+        this.arrNums.push(myCount);
+        return myCount;
+    } 
+
+    nextTrack(e,songs) {
+        e.preventDefault();
+        let myCount = this.randomNumber(0,songs.length-1)
+        console.log(myCount)
         let matchesSong = this.state.currentSongName.normalize("NFD").toLowerCase().replace(/[.,'\/?#!$%\^&\*;:{}=\_`~\s]/g,"")
-        
+        this.setState({correct: false, submitted: true})
+    
+        if(songs.length > 0)
+        {
+            while(songs[myCount].url == null)
+            {
+                myCount=this.randomNumber(0,songs.length-1);
+            } 
+        }
         if(matchesSong.includes('-'))
         {
             matchesSong = matchesSong.split('-')[0].trim();
@@ -53,18 +76,16 @@ class Player extends React.Component {
         {
             matchesSong = matchesSong.split('(')[0].trim();
         }
-        if(songs.length > 0)
-        {
-            myCount++;
-            while(songs[myCount].url == null)
-            {
-                myCount++;
-            } 
-        }
+        
         if(this.myInput.value.normalize("NFD").toLowerCase().replace(/[.,'\/?#!$%\^&\*;:{}=\_`~\s]/g,"").trim() == matchesSong)
         {
-            this.setState({score: this.state.score + 1}, () => console.log(this.state.score));
+            this.setState(
+                {score: this.state.score + 1,
+                correct: true
+            
+            }, () => console.log(this.state.score));
         }
+        this.setState({previousSongName: this.state.currentSongName});
         this.myInput.value = "";
         console.log(this.myInput.value);
         console.log(matchesSong);
@@ -81,19 +102,20 @@ class Player extends React.Component {
 
     handleAudio(songs) {
         console.log("handle audio start")
-        let myCount = this.state.count
+        let myCount = this.randomNumber(0,songs.length-1)
+        console.log(myCount)
         if(songs.length > 0)
         {
             while(songs[myCount].url == null)
             {
-                myCount++;
+                myCount = this.randomNumber(0,songs.length-1);
             } 
         }
         this.setState({
             count:myCount,
             currentSongUrl:songs[myCount].url,
-            currentSongName: songs[myCount].name
-
+            currentSongName: songs[myCount].name,
+            correct: false    
         }, () => console.log("im setting state"))
 
 
@@ -119,17 +141,19 @@ class Player extends React.Component {
      
             return [<h2> Score: {this.state.score} </h2>,
                     <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
-                        {() => this.nextTrack(songs)}> {console.log(this.state.currentSongUrl)}
+                        {(e) => this.nextTrack(e,songs)}> {console.log(this.state.currentSongUrl)}
                     </audio>, 
                     <div> {
-                    <form onSubmit = {() => this.userSubmit(songs)}>
+                    <form onSubmit = {(e) => this.nextTrack(e,songs)}>
                         <input
                             ref={input => {this.myInput = input;}} 
-                            placeholder="Enter song name">
+                            placeholder="Enter song name"
+                            autoFocus>
+
                         </input>
                         <button type="submit"> submit </button>
                     </form>} 
-                    </div>
+                    </div>, <div>{this.state.submitted? this.state.correct ? <h5> Good job!</h5>: <h5> Not quite... </h5> : null}</div>, this.state.submitted? <h4> Previous song:  {this.state.previousSongName} </h4> : null
                     ]
             
         }
@@ -181,10 +205,11 @@ class Select extends React.Component {
             clicked: false,
             isEmptyState: true,
             isLogged: false,
-            chosenPlaylist: '',
+            category: ""
     };
 
         this.handlePlaylist = this.handlePlaylist.bind(this);
+        this.handleCategory = this.handleCategory.bind(this);
     }
 
     componentDidMount(){
@@ -201,6 +226,15 @@ class Select extends React.Component {
                name: data.display_name
            }
        }))
+
+       fetch('https://api.spotify.com/v1/browse/categories', {
+         headers:{ 'Authorization': 'Bearer ' + accessToken
+       }}).then(response => response.json())
+       .then(data => {
+        console.log(data)
+       }
+           
+       )
 
        fetch('https://api.spotify.com/v1/browse/categories/decades/playlists', {
         headers: {'Authorization': 'Bearer ' + accessToken}
@@ -257,6 +291,11 @@ class Select extends React.Component {
         
     }
 
+    handleCategory(category) {
+        this.setState({
+            category: 'https://api.spotify.com/v1/browse/categories/'+{category}+'/playlists'});
+    }
+
     render() {
         
         let playlistToRender = 
@@ -284,6 +323,17 @@ class Select extends React.Component {
                 </p>   
 
             <Directions></Directions>
+
+            {/* <ul>
+                <li><button onClick={function(){this.handleCategory('decades')}}>decades</button></li>
+                <li><button onClick={function(){this.handleCategory('pop')}}>pop</button></li>
+                <li><button onClick={function(){this.handleCategory('hiphop')}}>hip hop</button></li>
+                <li><button onClick={function(){this.handleCategory('country')}}>country</button></li>
+                <li><button onClick={function(){this.handleCategory('rock')}}>rock</button></li>
+                <li><button onClick={function(){this.handleCategory('rnb')}}>rnb</button></li>
+                <li><button onClick={function(){this.handleCategory('tophits')}}>top hits</button></li>
+                
+            </ul> */}
 
             {
                 <div>
