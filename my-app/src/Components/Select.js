@@ -8,7 +8,7 @@ let defaultStyle = {
     color: 'ddd',
 };
 
-  {/* Narrow down a playlist */}
+/* Narrow down a playlist */
 class Filter extends React.Component {
     render() {
       return (
@@ -28,23 +28,51 @@ class Player extends React.Component {
     constructor(props){
         super(props);
         this.state={
-          currentSongUrl: null,
+          currentSongUrl: null, 
           currentSongName: "",
           currentSongArtist: "",
           isLogged: false,
-          count:0,
+          totalCount:0,
           score: 0,
+          correct: false,
+          submitted: false,
+          
         };
         this.handleAudio = this.handleAudio.bind(this);
         this.nextTrack = this.nextTrack.bind(this);
-        this.userSubmit = this.nextTrack.bind(this);
+        this.randomNumber = this.randomNumber.bind(this);
         this.myInput = React.createRef();
+        this.arrNums = [];
     } 
 
-    nextTrack(songs) {
-        let myCount = this.state.count
+    /*Generates a random number between min to max*/
+    randomNumber(min, max) {  
+        let myCount = parseInt(Math.random() * (max - min) + min); 
+        while(this.arrNums.indexOf(myCount) != -1) {
+            myCount = parseInt(Math.random() * (max - min) + min); 
+        }
+        this.arrNums.push(myCount);
+        return myCount;
+    } 
+
+    /**Sets state for next track, previous track, input validation
+    * @param songs array for which you want to set the next track
+    *
+    **/
+    nextTrack(e,songs) {
+        e.preventDefault();
+        let myCount = this.randomNumber(0,songs.length-1)
+        console.log(myCount)
         let matchesSong = this.state.currentSongName.normalize("NFD").toLowerCase().replace(/[.,'\/?#!$%\^&\*;:{}=\_`~\s]/g,"")
-        
+        this.setState({correct: false, submitted: true})
+    
+        if(songs.length > 0)
+        {
+            while(songs[myCount].url == null)
+            {
+                myCount=this.randomNumber(0,songs.length-1);
+            } 
+        }
         if(matchesSong.includes('-'))
         {
             matchesSong = matchesSong.split('-')[0].trim();
@@ -53,24 +81,22 @@ class Player extends React.Component {
         {
             matchesSong = matchesSong.split('(')[0].trim();
         }
-        if(songs.length > 0)
-        {
-            myCount++;
-            while(songs[myCount].url == null)
-            {
-                myCount++;
-            } 
-        }
+        
         if(this.myInput.value.normalize("NFD").toLowerCase().replace(/[.,'\/?#!$%\^&\*;:{}=\_`~\s]/g,"").trim() == matchesSong)
         {
-            this.setState({score: this.state.score + 1}, () => console.log(this.state.score));
+            this.setState(
+                {score: this.state.score + 1,
+                correct: true
+            
+            }, () => console.log(this.state.score));
         }
         this.myInput.value = "";
         console.log(this.myInput.value);
         console.log(matchesSong);
         this.setState({
+            previousSongName: this.state.currentSongName,
+            totalCount: this.state.totalCount + 1,
             match: false,
-            count:myCount,
             currentSongUrl:songs[myCount].url,
             currentSongName: songs[myCount].name,
             
@@ -81,19 +107,20 @@ class Player extends React.Component {
 
     handleAudio(songs) {
         console.log("handle audio start")
-        let myCount = this.state.count
+        let myCount = this.randomNumber(0,songs.length-1)
+        console.log(myCount)
         if(songs.length > 0)
         {
             while(songs[myCount].url == null)
             {
-                myCount++;
+                myCount = this.randomNumber(0,songs.length-1);
             } 
         }
         this.setState({
-            count:myCount,
+            currPosition:myCount,
             currentSongUrl:songs[myCount].url,
-            currentSongName: songs[myCount].name
-
+            currentSongName: songs[myCount].name,
+            correct: false    
         }, () => console.log("im setting state"))
 
 
@@ -117,19 +144,21 @@ class Player extends React.Component {
             } 
             
      
-            return [<h2> Score: {this.state.score} </h2>,
+            return [<h2> Score: {this.state.score} / {this.state.totalCount} </h2>,
                     <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
-                        {() => this.nextTrack(songs)}> {console.log(this.state.currentSongUrl)}
+                        {(e) => this.nextTrack(e,songs)}> {console.log(this.state.currentSongUrl)}
                     </audio>, 
                     <div> {
-                    <form onSubmit = {() => this.userSubmit(songs)}>
+                    <form onSubmit = {(e) => this.nextTrack(e,songs)}>
                         <input
                             ref={input => {this.myInput = input;}} 
-                            placeholder="Enter song name">
+                            placeholder="Enter song name"
+                            autoFocus>
+
                         </input>
                         <button type="submit"> submit </button>
                     </form>} 
-                    </div>
+                    </div>, <div>{this.state.submitted? this.state.correct ? <h5> Good job!</h5>: <h5> Not quite... </h5> : null}</div>, this.state.submitted? <h4> Previous song:  {this.state.previousSongName} </h4> : null
                     ]
             
         }
@@ -139,20 +168,20 @@ class Player extends React.Component {
     }
 }   
 
-class Playlist extends React.Component {
+class Card extends React.Component {
 
     constructor(){
         super();
     }
 
     render() {
-        let playlist = this.props.playlist
+        let card = this.props.card
         return(
             <div>
                 
-                <img src={playlist.imageUrl} style={{width: '150px', height: '150px'}}/>
+                <img src={card.imageUrl} style={{width: '150px', height: '150px'}}/>
 
-                <h3> {this.props.playlist.name} </h3>
+                <h3> {this.props.card.name} </h3>
                 {/*
                 
                 <ul>
@@ -175,16 +204,20 @@ class Select extends React.Component {
         super(props);
         this.state = {
             serverData: {}, 
-            filterString: '',
+            categoryFilterString: '',
+            playlistFilterString: '',
             songSelectedUrl: '',
             songsList: {},
+            categoryClicked: false,
             clicked: false,
             isEmptyState: true,
             isLogged: false,
-            chosenPlaylist: '',
+            catIsLogged: false,
+            category: ""
     };
 
         this.handlePlaylist = this.handlePlaylist.bind(this);
+        this.handleCategory = this.handleCategory.bind(this);
     }
 
     componentDidMount(){
@@ -202,47 +235,23 @@ class Select extends React.Component {
            }
        }))
 
-       fetch('https://api.spotify.com/v1/browse/categories/decades/playlists', {
-        headers: {'Authorization': 'Bearer ' + accessToken}
-        }).then(response => response.json())
-       .then(playlistData => {
-           console.log(playlistData)
-           let playlists = playlistData.playlists.items
-           let trackDataPromises = playlists.map(playlist  => { 
-               let responsePromise = fetch(playlist.tracks.href, { 
-                headers: {'Authorization' : 'Bearer ' + accessToken}
-               })
-               let trackDataPromise = responsePromise
-               .then(response => response.json())
-               return trackDataPromise
-            })
-            let allTracksDataPromises 
-                = Promise.all(trackDataPromises)
-             {/*get song names, error may occur i url is null? */}   
-            let playlistPromise = allTracksDataPromises.then(trackDatas => {
-                trackDatas.forEach((trackData, i) => {
-                    playlists[i].trackDatas = trackData.items
-                    .map(item => item.track) 
-                    .map(trackData => ({
-                        name: trackData.name,
-                        url: trackData.preview_url,
-                        duration: trackData.duration_ms / 1000
-                    }))                   
+       fetch('https://api.spotify.com/v1/browse/categories', {
+         headers:{ 'Authorization': 'Bearer ' + accessToken
+       }}).then(response => response.json())
+       .then(categoryData => {
+        console.log(categoryData)
+        let categories = categoryData.categories.items
+        this.setState({
+            categories: categories.map(item => {
+                return {
+                    name: item.name,
+                    imageUrl: item.icons[0].url,
+                    id: item.id
+                    }
                 })
-                return playlists
             })
-            return playlistPromise
-       })
-       .then(playlists => this.setState({
-           playlists: playlists.map(item => {
-               return {
-                   name: item.name,
-                   imageUrl: item.images[0].url,
-                   songs: item.trackDatas
-                }
-            })
-        }))
-    
+        })
+
     }
 
     handlePlaylist(playlist) {
@@ -251,22 +260,88 @@ class Select extends React.Component {
             clicked: true,
             isEmptyState: false,
             songsList: playlist.songs,
-            filterString: playlist.name,
+            playlistFilterString: playlist.name,
         });
         console.log("clicked")
         
     }
 
+    handleCategory(category) {
+        
+        let parsed = queryString.parse(window.location.hash); //gets access token
+        let accessToken = parsed.access_token;
+        
+        this.setState({
+            categoryClicked: true,
+            categoryId: category.id,
+            categoryFilterString: 'removeCategory'
+        });
+
+        let url = 'https://api.spotify.com/v1/browse/categories/' + category.id + '/playlists'
+        console.log(url)
+        fetch(url, {
+                headers: {'Authorization': 'Bearer ' + accessToken}
+                }).then(response => response.json())
+                .then(playlistData => {
+                    console.log(playlistData)
+                    let playlists = playlistData.playlists.items
+                    let trackDataPromises = playlists.map(playlist  => { 
+                        let responsePromise = fetch(playlist.tracks.href, { 
+                        headers: {'Authorization' : 'Bearer ' + accessToken}
+                        })
+                        let trackDataPromise = responsePromise
+                        .then(response => response.json())
+                        return trackDataPromise
+                    })
+                    let allTracksDataPromises 
+                        = Promise.all(trackDataPromises)
+                        {/*get song names, error may occur i url is null? */}   
+                    let playlistPromise = allTracksDataPromises.then(trackDatas => {
+                        trackDatas.forEach((trackData, i) => {
+                            playlists[i].trackDatas = trackData.items
+                            .map(item => item.track) 
+                            .map(trackData => ({
+                                name: trackData.name,
+                                url: trackData.preview_url,
+                                duration: trackData.duration_ms / 1000
+                            }))                   
+                        })
+                        return playlists
+                    })
+                    return playlistPromise
+                })
+                .then(playlists => this.setState({
+                    playlists: playlists.map(item => {
+                        return {
+                            name: item.name,
+                            imageUrl: item.images[0].url,
+                            songs: item.trackDatas
+                        }
+                    })
+                }))   
+    
+    }
+
     render() {
+
+        let categoryToRender = 
+        this.state.user && 
+        this.state.categories 
+            ? this.state.categories.filter(category => {
+                let matchesCategory = category.name.toLowerCase().includes(
+                    this.state.categoryFilterString.toLowerCase())
+                return matchesCategory
+            }) : []
+
         
         let playlistToRender = 
         this.state.user && 
         this.state.playlists 
             ? this.state.playlists.filter(playlist => {
                 let matchesPlaylist = playlist.name.toLowerCase().includes(
-                    this.state.filterString.toLowerCase())
+                    this.state.playlistFilterString.toLowerCase())
                 let matchesSong = playlist.songs.find(song => song.name.toLowerCase()
-                .includes(this.state.filterString.toLowerCase()))
+                .includes(this.state.playlistFilterString.toLowerCase()))
                 return matchesPlaylist || matchesSong
             }) : []
 
@@ -293,25 +368,33 @@ class Select extends React.Component {
                 </div>
             }
             
-
-           {/* Renders playlist after using filter, learn to use shouldComponentUpdate */}
             <Filter onTextChange={text => {
-                this.setState({filterString: text})
-                }}/>
-            {
-            playlistToRender.map(playlist => 
+                this.setState({categoryFilterString: text, playlistFilterString: text})
+            }}/>
+            {categoryToRender.map(category => 
                 
+                    <button className="songCard" onClick={() => this.handleCategory(category)}>
+    
+                        {this.state.categoryClicked && !this.state.catIsLogged ? this.setState(
+                            { 
+                                catIsLogged: true,
+                            }): console.log(category)
+                        }
+                        <Card card={category} />
+                    </button>
+                )
+            }
+            { this.state.categoryClicked ? playlistToRender.map(playlist => 
                 <button className="songCard" onClick={() => this.handlePlaylist(playlist)}>
 
                     {this.state.clicked && !this.state.isLogged ? this.setState(
                         { 
                             isLogged: true,
-                        }): console.log(playlist)
+                        }): console.log("no playlists")
                     }
-                    
-                    <Playlist playlist={playlist} />
+                    <Card card={playlist} />
                 </button>
-            )}
+            ) : console.log("unclicked")} 
             
             </div> : <button onClick={() => {
             window.location = window.location.href.includes('localhost') 
