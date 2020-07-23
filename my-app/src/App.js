@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css'
 import Select from './Components/Select'
 import Title from './Components/Title'
-import Play from './Components/Play';
+import Directions from './Components/Directions'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 
 class App extends React.Component {
@@ -15,7 +15,7 @@ class App extends React.Component {
                 
                 <Switch>
                     <Route exact path="/" component = {Select}/>
-                    <Route exact path="/Play" component = {Play}/>
+
                 </Switch>
             </Router>
             {/*Need to use React Router, show playlist selection, audio-game on different pages

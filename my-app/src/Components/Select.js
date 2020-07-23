@@ -1,202 +1,12 @@
 import React from 'react';
 import queryString from 'query-string';
+import Timer from './Timer';
+import Card from './Card';
+import Player from './Player';
+import Filter from './Filter';
 import Directions from './Directions';
 import '../App.css';
 
-
-let defaultStyle = {
-    color: 'ddd',
-};
-
-/* Narrow down a playlist */
-class Filter extends React.Component {
-    render() {
-      return (
-        <div style={defaultStyle}>
-          <img/>
-          {/* <input type="text" onKeyUp={event => 
-            this.props.onTextChange(event.target.value)}/> 
-            */
-          }
-        </div>
-      );
-    }
-  }
-
-class Player extends React.Component {
-
-    constructor(props){
-        super(props);
-        this.state={
-          currentSongUrl: null, 
-          currentSongName: "",
-          currentSongArtist: "",
-          isLogged: false,
-          totalCount:0,
-          score: 0,
-          correct: false,
-          submitted: false,
-          
-        };
-        this.handleAudio = this.handleAudio.bind(this);
-        this.nextTrack = this.nextTrack.bind(this);
-        this.randomNumber = this.randomNumber.bind(this);
-        this.myInput = React.createRef();
-        this.arrNums = [];
-    } 
-
-    /*Generates a random number between min to max*/
-    randomNumber(min, max) {  
-        let myCount = parseInt(Math.random() * (max - min) + min); 
-        while(this.arrNums.indexOf(myCount) != -1) {
-            myCount = parseInt(Math.random() * (max - min) + min); 
-        }
-        this.arrNums.push(myCount);
-        return myCount;
-    } 
-
-    /**Sets state for next track, previous track, input validation
-    * @param songs array for which you want to set the next track
-    *
-    **/
-    nextTrack(e,songs) {
-        e.preventDefault();
-        let myCount = this.randomNumber(0,songs.length-1)
-        console.log(myCount)
-        let matchesSong = this.state.currentSongName.normalize("NFD").toLowerCase().replace(/[.,'\/?#!$%\^&\*;:{}=\_`~\s]/g,"")
-        this.setState({correct: false, submitted: true})
-    
-        if(songs.length > 0)
-        {
-            while(songs[myCount].url == null)
-            {
-                myCount=this.randomNumber(0,songs.length-1);
-            } 
-        }
-        if(matchesSong.includes('-'))
-        {
-            matchesSong = matchesSong.split('-')[0].trim();
-        }
-        else if(matchesSong.includes('('))
-        {
-            matchesSong = matchesSong.split('(')[0].trim();
-        }
-        
-        if(this.myInput.value.normalize("NFD").toLowerCase().replace(/[.,'\/?#!$%\^&\*;:{}=\_`~\s]/g,"").trim() == matchesSong)
-        {
-            this.setState(
-                {score: this.state.score + 1,
-                correct: true
-            
-            }, () => console.log(this.state.score));
-        }
-        this.myInput.value = "";
-        console.log(this.myInput.value);
-        console.log(matchesSong);
-        this.setState({
-            previousSongName: this.state.currentSongName,
-            totalCount: this.state.totalCount + 1,
-            match: false,
-            currentSongUrl:songs[myCount].url,
-            currentSongName: songs[myCount].name,
-            
-        }, () => console.log(songs[myCount].name))
-
-        console.log("nextTrack done")
-    }
-
-    handleAudio(songs) {
-        console.log("handle audio start")
-        let myCount = this.randomNumber(0,songs.length-1)
-        console.log(myCount)
-        if(songs.length > 0)
-        {
-            while(songs[myCount].url == null)
-            {
-                myCount = this.randomNumber(0,songs.length-1);
-            } 
-        }
-        this.setState({
-            currPosition:myCount,
-            currentSongUrl:songs[myCount].url,
-            currentSongName: songs[myCount].name,
-            correct: false    
-        }, () => console.log("im setting state"))
-
-
-        console.log("handle audio done")
-    }
-    
-    //randomSongPlayer
-    render() {
-       
-        let songs = this.props.selectedPlaylist
-       
-        if(songs == null)
-        {
-            return <h2>Error! No playlists retrieved! </h2>
-        }
-        if(songs.length > 0)
-        {
-            if(this.state.currentSongUrl == null || this.state.currentSongUrl == '')
-            {
-                this.handleAudio(songs)
-            } 
-            
-     
-            return [<h2> Score: {this.state.score} / {this.state.totalCount} </h2>,
-                    <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
-                        {(e) => this.nextTrack(e,songs)}> {console.log(this.state.currentSongUrl)}
-                    </audio>, 
-                    <div> {
-                    <form onSubmit = {(e) => this.nextTrack(e,songs)}>
-                        <input
-                            ref={input => {this.myInput = input;}} 
-                            placeholder="Enter song name"
-                            autoFocus>
-
-                        </input>
-                        <button type="submit"> submit </button>
-                    </form>} 
-                    </div>, <div>{this.state.submitted? this.state.correct ? <h5> Good job!</h5>: <h5> Not quite... </h5> : null}</div>, this.state.submitted? <h4> Previous song:  {this.state.previousSongName} </h4> : null
-                    ]
-            
-        }
-        else{
-            return <h2> Error! No songs retrieved! </h2>
-        }
-    }
-}   
-
-class Card extends React.Component {
-
-    constructor(){
-        super();
-    }
-
-    render() {
-        let card = this.props.card
-        return(
-            <div>
-                
-                <img src={card.imageUrl} style={{width: '150px', height: '150px'}}/>
-
-                <h3> {this.props.card.name} </h3>
-                {/*
-                
-                <ul>
-                    {this.props.playlist.songs.map(song =>
-                        <li>{song.name} </li>
-                    )}
-                </ul>
-
-                */}
-                
-                
-            </div>
-        );
-    }
-}
 
 class Select extends React.Component {
 
@@ -213,6 +23,7 @@ class Select extends React.Component {
             isEmptyState: true,
             isLogged: false,
             catIsLogged: false,
+            renderPlayer: false,
             category: ""
     };
 
@@ -235,7 +46,7 @@ class Select extends React.Component {
            }
        }))
 
-       fetch('https://api.spotify.com/v1/browse/categories', {
+       fetch('https://api.spotify.com/v1/browse/categories?&limit=50', {
          headers:{ 'Authorization': 'Bearer ' + accessToken
        }}).then(response => response.json())
        .then(categoryData => {
@@ -262,7 +73,10 @@ class Select extends React.Component {
             songsList: playlist.songs,
             playlistFilterString: playlist.name,
         });
-        console.log("clicked")
+
+        setTimeout(function() { //Start the timer
+            this.setState({renderPlayer: true}) //After 1 second, set render to true
+        }.bind(this), 3000)
         
     }
 
@@ -277,7 +91,7 @@ class Select extends React.Component {
             categoryFilterString: 'removeCategory'
         });
 
-        let url = 'https://api.spotify.com/v1/browse/categories/' + category.id + '/playlists'
+        let url = 'https://api.spotify.com/v1/browse/categories/' + category.id + '/playlists?&limit=50'
         console.log(url)
         fetch(url, {
                 headers: {'Authorization': 'Bearer ' + accessToken}
@@ -340,9 +154,7 @@ class Select extends React.Component {
             ? this.state.playlists.filter(playlist => {
                 let matchesPlaylist = playlist.name.toLowerCase().includes(
                     this.state.playlistFilterString.toLowerCase())
-                let matchesSong = playlist.songs.find(song => song.name.toLowerCase()
-                .includes(this.state.playlistFilterString.toLowerCase()))
-                return matchesPlaylist || matchesSong
+                return matchesPlaylist
             }) : []
 
             var self = this;
@@ -358,12 +170,13 @@ class Select extends React.Component {
                     </h1>
                 </p>   
 
-            <Directions></Directions>
-
+                <Directions></Directions>
+            
             {
                 <div>
-                    {this.state.clicked && <Player elementId = "myPlayer" selectedPlaylist = {this.state.songsList}/>}
-                    {this.state.isEmptyState && <h3> Select a playlist:  </h3> }
+                    {this.state.clicked && this.state.renderPlayer ? <Player elementId = "myPlayer" selectedPlaylist = {this.state.songsList}/> : this.state.categoryClicked && this.state.clicked ? <Timer myTimer/> : null}
+                    {!this.state.categoryClicked && <h3> Select a category:  </h3> }
+                    {this.state.categoryClicked && this.state.isEmptyState && <h3> Select a playlist:  </h3> }
                    
                 </div>
             }
@@ -384,6 +197,7 @@ class Select extends React.Component {
                     </button>
                 )
             }
+            
             { this.state.categoryClicked ? playlistToRender.map(playlist => 
                 <button className="songCard" onClick={() => this.handlePlaylist(playlist)}>
 
@@ -395,13 +209,12 @@ class Select extends React.Component {
                     <Card card={playlist} />
                 </button>
             ) : console.log("unclicked")} 
-            
-            </div> : <button onClick={() => {
+            </div> : [<div> Welcome... </div>, <button onClick={() => {
             window.location = window.location.href.includes('localhost') 
               ? 'http://localhost:8888/login' 
               : 'heroku link here' }
           }
-          style={{padding: '20px', 'font-size': '50px', 'margin-top': '20px'}}>Sign in with Spotify</button>
+          style={{padding: '20px', 'font-size': '50px', 'margin-top': '20px'}}>Sign in with Spotify</button>]
             }
         </div>
         );
