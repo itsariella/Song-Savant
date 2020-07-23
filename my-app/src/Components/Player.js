@@ -51,11 +51,11 @@ export default class Player extends React.Component {
         }
         if(matchesSong.includes('('))
         {
-            matchesSong = matchesSong.split('-')[0].trim();
+            matchesSong = matchesSong.split('(')[0].trim();
         }
         if(matchesSong.includes('-'))
         {
-            matchesSong = matchesSong.split('(')[0].trim();
+            matchesSong = matchesSong.split('-')[0].trim();
         }
         
         if(this.myInput.value.normalize("NFD").toLowerCase().replace(/[.,'\/?#!$%\^&\*;:{}=\_`~\s]/g,"").trim() == matchesSong)
