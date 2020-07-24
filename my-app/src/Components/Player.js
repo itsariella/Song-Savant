@@ -24,7 +24,7 @@ export default class Player extends React.Component {
     /*Generates a random number between min to max*/
     randomNumber(min, max) {  
         let myCount = parseInt(Math.random() * (max - min) + min); 
-        while(this.arrNums.indexOf(myCount) != -1) {
+        while(this.arrNums.indexOf(myCount) !== -1) {
             myCount = parseInt(Math.random() * (max - min) + min); 
         }
         this.arrNums.push(myCount);
@@ -39,7 +39,7 @@ export default class Player extends React.Component {
         e.preventDefault();
         let myCount = this.randomNumber(0,songs.length-1)
         console.log(myCount)
-        let matchesSong = this.state.currentSongName.normalize("NFD").toLowerCase().replace(/[.,'\/?#!$%\^&\*;:{}=\_`~\s]/g,"")
+        let matchesSong = this.state.currentSongName.normalize("NFD").toLowerCase().replace(/[.,'/?#!$%^&*;:{}=_`~\s]/g,"")
         this.setState({correct: false, submitted: true})
     
         if(songs.length > 0)
@@ -50,7 +50,7 @@ export default class Player extends React.Component {
             } 
         }
 
-        if(matchesSong[0] == ('('))
+        if(matchesSong[0] === ('('))
         {
             matchesSong = matchesSong.split(')')[1].trim();
         }
@@ -63,7 +63,7 @@ export default class Player extends React.Component {
             matchesSong = matchesSong.split('-')[0].trim();
         }
         
-        if(this.myInput.value.normalize("NFD").toLowerCase().replace(/[.,'\/?#!$%\^&\*;:{}=\_`~\s]/g,"").trim() == matchesSong)
+        if(this.myInput.value.normalize("NFD").toLowerCase().replace(/[.,'/?#!$%^&*;:{}=_`~\s]/g,"").trim() === matchesSong)
         {
             this.setState(
                 {score: this.state.score + 1,
@@ -118,7 +118,7 @@ export default class Player extends React.Component {
         }
         if(songs.length > 0)
         {
-            if(this.state.currentSongUrl == null || this.state.currentSongUrl == '')
+            if(this.state.currentSongUrl === null || this.state.currentSongUrl === '')
             {
                 this.handleAudio(songs)
             } 

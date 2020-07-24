@@ -1,12 +1,6 @@
 import React from 'react';
-import styles from '../App.css'
-
 
 class Title extends React.Component {
-
-    constructor() {
-        super();
-    }
 
     render() {
         return (
