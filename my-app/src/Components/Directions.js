@@ -2,10 +2,6 @@ import React from "react";
 
 export default class Directions extends React.Component {
 
-    constructor(){
-        super();
-      }
-
     render() {
       return (
         <div id = "Directions">

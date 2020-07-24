@@ -1,10 +1,6 @@
 import React from "react";
 export default class Card extends React.Component {
 
-    constructor(){
-        super();
-    }
-
     render() {
         let card = this.props.card
         return(
