@@ -64,6 +64,11 @@ body {
   background-color: #F0FFFF;
 }
 
+a{
+  text-decoration:none;
+  color:firebrick;
+}
+
 .songCard {
   margin: 20px;
   width: 175px;

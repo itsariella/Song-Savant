@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './App.css'
 import Select from './Components/Select'
 import Title from './Components/Title'
-import Directions from './Components/Directions'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 
 class App extends React.Component {
