@@ -1,4 +1,5 @@
 import React from "react";
+import '../App.css';
 
 export default class Timer extends React.Component {
 
@@ -7,7 +8,7 @@ constructor(){
 
     this.state = {
         time: 3,
-        done:false
+        started: false
     }
 
     this.countdown = this.countdown.bind(this);
@@ -25,23 +26,20 @@ componentWillUnmount() {
   }
 }
 
-isDone(){
-    return this.state.done
-}
 countdown(){
     if(this.state.time == null)
     {
         console.log("NULL")
     }
     let myTime = this.state.time
-    
+    console.log(myTime)
     if(myTime > 0) {
         myTime--;
         this.setState({time: myTime})
-        console.log(myTime)
+    } else if(!this.state.started) {
+        this.setState({time: 120, started: true})
     } else {
         clearInterval(this.interval)
-        this.setState({done: true})
     }
 
     return myTime;
@@ -50,9 +48,8 @@ countdown(){
 render() {
   return (
     <div id = "Timer">
-      <p>
-          Game starts in {this.state.time} . . .
-      </p>
+        {!this.state.started? <p> Game starts in {this.state.time} . . .</p> : <p id = "gameTimer"> {this.state.time} </p> }
+      
     </div>
   );
 }

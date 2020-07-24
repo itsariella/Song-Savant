@@ -24,6 +24,7 @@ class Select extends React.Component {
             isLogged: false,
             catIsLogged: false,
             renderPlayer: false,
+            renderTimer: true,
             category: ""
     };
 
@@ -66,7 +67,7 @@ class Select extends React.Component {
     }
 
     handlePlaylist(playlist) {
-       
+       console.log("clicked")
         this.setState({
             clicked: true,
             isEmptyState: false,
@@ -76,7 +77,11 @@ class Select extends React.Component {
 
         setTimeout(function() { //Start the timer
             this.setState({renderPlayer: true}) //After 1 second, set render to true
-        }.bind(this), 3000)
+        }.bind(this), 4000)
+
+        setTimeout(function() {
+            this.setState({renderPlayer:false, renderTimer:false})
+        }.bind(this),124000)
         
     }
 
@@ -170,11 +175,12 @@ class Select extends React.Component {
                     </h1>
                 </p>   
 
-                <Directions></Directions>
-            
             {
                 <div>
-                    {this.state.clicked && this.state.renderPlayer ? <Player elementId = "myPlayer" selectedPlaylist = {this.state.songsList}/> : this.state.categoryClicked && this.state.clicked ? <Timer myTimer/> : null}
+                    {!this.state.clicked ? <Directions></Directions> : null}
+                     {this.state.categoryClicked && this.state.clicked && this.state.renderTimer? <Timer myTimer/> : null}
+                     {!this.state.renderTimer ? <div> Game over! </div> : null}
+                    {this.state.clicked && this.state.renderPlayer ? <Player elementId = "myPlayer" selectedPlaylist = {this.state.songsList}/> : null}
                     {!this.state.categoryClicked && <h3> Select a category:  </h3> }
                     {this.state.categoryClicked && this.state.isEmptyState && <h3> Select a playlist:  </h3> }
                    

@@ -49,7 +49,12 @@ export default class Player extends React.Component {
                 myCount=this.randomNumber(0,songs.length-1);
             } 
         }
-        if(matchesSong.includes('('))
+
+        if(matchesSong[0] == ('('))
+        {
+            matchesSong = matchesSong.split(')')[1].trim();
+        }
+        else if(matchesSong.includes('('))
         {
             matchesSong = matchesSong.split('(')[0].trim();
         }
