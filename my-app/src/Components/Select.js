@@ -25,7 +25,8 @@ class Select extends React.Component {
             catIsLogged: false,
             renderPlayer: false,
             renderTimer: true,
-            category: ""
+            category: "",
+            fetched: false
     };
 
         this.handlePlaylist = this.handlePlaylist.bind(this);
@@ -89,20 +90,23 @@ class Select extends React.Component {
         
         let parsed = queryString.parse(window.location.hash); //gets access token
         let accessToken = parsed.access_token;
-        
+        console.log("here!!!!!!!!!!!!!!!111")
         this.setState({
             categoryClicked: true,
             categoryId: category.id,
-            categoryFilterString: 'removeCategory'
+            categoryFilterString: 'removeCategory',
+            fetched: true
         });
-
+        
         let url = 'https://api.spotify.com/v1/browse/categories/' + category.id + '/playlists?&limit=50'
         console.log(url)
+
         fetch(url, {
                 headers: {'Authorization': 'Bearer ' + accessToken}
                 }).then(response => response.json())
                 .then(playlistData => {
                     console.log(playlistData)
+                    
                     let playlists = playlistData.playlists.items
                     let trackDataPromises = playlists.map(playlist  => { 
                         let responsePromise = fetch(playlist.tracks.href, { 
@@ -114,16 +118,21 @@ class Select extends React.Component {
                     })
                     let allTracksDataPromises 
                         = Promise.all(trackDataPromises)
-                        {/*get song names, error may occur i url is null? */}   
+                        /*get song names, error may occur if track is null? */ 
                     let playlistPromise = allTracksDataPromises.then(trackDatas => {
+        
                         trackDatas.forEach((trackData, i) => {
+
+                            console.log(trackData)
+                            console.log(trackData.items.filter(function(item) {return item.track != null }))
+                            console.log(trackData.items)
                             playlists[i].trackDatas = trackData.items
-                            .map(item => item.track) 
-                            .map(trackData => ({
+                                .filter(function(item) {return item.track != null })
+                                .map(item => item.track)  
+                                .map((trackData) => ({
                                 name: trackData.name,
-                                url: trackData.preview_url,
-                                duration: trackData.duration_ms / 1000
-                            }))                   
+                                url: trackData.preview_url
+                            }))                  
                         })
                         return playlists
                     })
@@ -137,8 +146,8 @@ class Select extends React.Component {
                             songs: item.trackDatas
                         }
                     })
-                }))   
-    
+                }))
+                
     }
 
     render() {
@@ -161,8 +170,6 @@ class Select extends React.Component {
                     this.state.playlistFilterString.toLowerCase())
                 return matchesPlaylist
             }) : []
-
-            var self = this;
 
         return (
         <div>
