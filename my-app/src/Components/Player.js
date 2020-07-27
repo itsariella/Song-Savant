@@ -24,7 +24,8 @@ export default class Player extends React.Component {
     /*Generates a random number between min to max*/
     randomNumber(min, max) {  
         let myCount = parseInt(Math.random() * (max - min) + min); 
-        while(this.arrNums.indexOf(myCount) !== -1) {
+        let attemptNum = 0;
+        while(this.arrNums.indexOf(myCount) !== -1 && attemptNum <= 5) {
             myCount = parseInt(Math.random() * (max - min) + min); 
         }
         this.arrNums.push(myCount);
