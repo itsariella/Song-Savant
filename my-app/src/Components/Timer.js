@@ -1,4 +1,5 @@
 import React from "react";
+import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import '../App.css';
 
 export default class Timer extends React.Component {
@@ -16,7 +17,6 @@ constructor(props){
 
     this.formatTimeLeft = this.formatTimeLeft.bind(this);
     this.calculateTimeFraction = this.calculateTimeFraction.bind(this);
-    this.setCircleDasharray = this.setCircleDasharray.bind(this);
     this.onTimesUp = this.onTimesUp.bind(this);
     
 }
@@ -51,7 +51,22 @@ formatTimeLeft(time) {
 
 startTimer() {
 
-    if(this.state.timeLeft > 0)
+    if(this.state.timeLeft < 10) {
+      this.setState({
+        timePassed: this.state.timePassed += 1,
+        timeLeft: this.state.TIME_LIMIT - this.state.timePassed,
+        remainingPathColor: "base-timer__path-remaining red"
+      });
+    }
+    else if (this.state.timeLeft < 20)
+    {
+      this.setState({
+        timePassed: this.state.timePassed += 1,
+        timeLeft: this.state.TIME_LIMIT - this.state.timePassed,
+        remainingPathColor: "base-timer__path-remaining orange"
+      });
+    }
+    else if (this.state.timeLeft > 0)
     {
       this.setState({
         timePassed: this.state.timePassed += 1,
@@ -59,11 +74,9 @@ startTimer() {
         remainingPathColor: "base-timer__path-remaining green"
       });
     }
-    if(this.state.timeLeft === 0){
+    else if(this.state.timeLeft === 0){
       this.onTimesUp();
     }
-    
-    this.setCircleDasharray();
     
 }
 
@@ -76,39 +89,27 @@ calculateTimeFraction() {
   return rawTimeFraction - (1 / this.state.TIME_LIMIT) * (1 - rawTimeFraction);
 }
 
-setCircleDasharray() {
-  let circleDasharray = `${(
-    this.calculateTimeFraction() * 283
-  ).toFixed(0)} 283`;
-  document
-    .getElementById("base-timer-path-remaining")
-    .setAttribute("stroke-dasharray", circleDasharray);
-}
-
 render() {
   
   return (
-    <div id="base-timer">
-        <svg className="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <g className="base-timer__circle">
-            <circle className="base-timer__path-elapsed" cx="50" cy="50" r="45"></circle>
-            <path
-              id="base-timer-path-remaining"
-              stroke-dasharray= "283"
-              className= {this.state.remainingPathColor}
-              d="
-                  M 50,50
-                  m -45,0
-                  a 45,45 0 1,0 90,0
-                  a 45,45 0 1,0 -90,0
-                "
-            ></path>
-          </g>
-        </svg>
-      <span id="base-timer-label" className="base-timer__label">
-        {this.formatTimeLeft(this.state.timeLeft)}
-      </span>
+
+    <div id="timer">
+    <CountdownCircleTimer
+          isPlaying
+          duration={this.state.timeLeft}
+          size={75}
+          strokeWidth={7}
+          colors={[
+            ['#004777', 0.33],
+            ['#F7B801', 0.33],
+            ['#A30000', 0.33],
+          ]}
+        >
+          {({ remainingTime }) => remainingTime}
+    </CountdownCircleTimer>
     </div>
+    
+
   );
 }
 }
