@@ -221,12 +221,12 @@ class Select extends React.Component {
                     <Card card={playlist} />
                 </button>
             ) : console.log("unclicked")} 
-            </div> : [<div> Welcome... </div>, <button onClick={() => {
+            </div> : [<img src={require("../images/Song-SavantLogo.png")}/>, <button id="signIn" onClick={() => {
             window.location = window.location.href.includes('localhost') 
               ? 'http://localhost:8888/login' 
               : 'heroku link here' }
           }
-          style={{padding: '20px', 'font-size': '50px', 'margin-top': '20px'}}>Sign in with Spotify</button>]
+          >Sign in with Spotify</button>]
             }
         </div>
         );
