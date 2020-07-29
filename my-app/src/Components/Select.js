@@ -14,8 +14,6 @@ class Select extends React.Component {
         super(props);
         this.state = {
             serverData: {}, 
-            categoryFilterString: '',
-            playlistFilterString: '',
             songSelectedUrl: '',
             songsList: {},
             categoryClicked: false,
@@ -75,7 +73,7 @@ class Select extends React.Component {
             clicked: true,
             isEmptyState: false,
             songsList: playlist.songs,
-            playlistFilterString: playlist.name,
+            playlists: [playlist]
         });
 
         setTimeout(function() { //Start the timer
@@ -92,7 +90,6 @@ class Select extends React.Component {
         
         let parsed = queryString.parse(window.location.hash); //gets access token
         let accessToken = parsed.access_token;
-        console.log("here!!!!!!!!!!!!!!!111")
         this.setState({
             categoryClicked: true,
             categoryId: category.id,
@@ -168,8 +165,7 @@ class Select extends React.Component {
         this.state.user && 
         this.state.playlists 
             ? this.state.playlists.filter(playlist => {
-                let matchesPlaylist = playlist.name.toLowerCase().includes(
-                    this.state.playlistFilterString.toLowerCase())
+                let matchesPlaylist = this.state.playlists
                 return matchesPlaylist
             }) : []
 
@@ -197,9 +193,6 @@ class Select extends React.Component {
                 </div>
             }
             
-            <Filter onTextChange={text => {
-                this.setState({categoryFilterString: text, playlistFilterString: text})
-            }}/>
             {categoryToRender.map(category => 
                 
                     <button className="songCard" onClick={() => this.handleCategory(category)}>
