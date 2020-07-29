@@ -24,10 +24,11 @@ class Select extends React.Component {
             isLogged: false,
             catIsLogged: false,
             renderPlayer: false,
-            renderTimer: true,
+            renderTimer: false,
             category: "",
             fetched: false,
-            myCategories: ["hiphop", "pop", "toplists", "country", "rock", "rnb", "alternative", "dance", "decades", "christian", "kpop", "anime", "blues", "classical","indie","jazz","soul","punk","metal","reggae","funk"]
+            myCategories: ["hiphop", "pop", "toplists", "country", "rock", "rnb", "alternative", "dance", "decades", "christian", "kpop", "anime", "blues", "classical","indie","jazz","soul","punk","metal","reggae","funk"],
+            gameOver:false
     };
 
         this.handlePlaylist = this.handlePlaylist.bind(this);
@@ -78,12 +79,12 @@ class Select extends React.Component {
         });
 
         setTimeout(function() { //Start the timer
-            this.setState({renderPlayer: true}) //After 1 second, set render to true
-        }.bind(this), 4000)
+            this.setState({renderPlayer: true, renderTimer: true}) //After 1 second, set render to true
+        }.bind(this), 3000)
 
         setTimeout(function() {
-            this.setState({renderPlayer:false, renderTimer:false})
-        }.bind(this),124000)
+            this.setState({renderPlayer:false, renderTimer:false, gameOver: true})
+        }.bind(this),123000)
         
     }
 
@@ -186,8 +187,9 @@ class Select extends React.Component {
             {
                 <div>
                     {!this.state.clicked ? <Directions></Directions> : null}
-                     {this.state.categoryClicked && this.state.clicked && this.state.renderTimer? <Timer myTimer/> : null}
-                     {!this.state.renderTimer ? <div> Game over! </div> : null}
+                    {!this.state.renderTimer && !this.state.gameOver && this.state.categoryClicked && this.state.clicked ? <div>Game starts in...<Timer limit={3} ></Timer></div> : null}
+                    {this.state.categoryClicked && this.state.clicked && this.state.renderTimer? <Timer limit={120} myTimer/> : null}
+                    {!this.state.renderTimer && this.state.gameOver ? <div> Game over! </div> : null}
                     {this.state.clicked && this.state.renderPlayer ? <Player elementId = "myPlayer" selectedPlaylist = {this.state.songsList}/> : null}
                     {!this.state.categoryClicked && <h3> Select a category:  </h3> }
                     {this.state.categoryClicked && this.state.isEmptyState && <h3> Select a playlist:  </h3> }
