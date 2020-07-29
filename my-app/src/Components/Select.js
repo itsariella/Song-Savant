@@ -112,7 +112,7 @@ class Select extends React.Component {
                         headers: {'Authorization' : 'Bearer ' + accessToken}
                         })
                         let trackDataPromise = responsePromise
-                        .then(response => response.json())
+                        .then(response => response.json()).catch((error) => {console.log(error)})
                         return trackDataPromise
                     })
                     let allTracksDataPromises 
@@ -146,6 +146,9 @@ class Select extends React.Component {
                         }
                     })
                 }))
+                .catch((error) => {
+                    console.log(error)
+                })
                 
     }
 
