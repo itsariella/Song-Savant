@@ -26,7 +26,8 @@ class Select extends React.Component {
             renderPlayer: false,
             renderTimer: true,
             category: "",
-            fetched: false
+            fetched: false,
+            myCategories: ["hiphop", "pop", "toplists", "country", "rock", "rnb", "alternative", "dance", "decades", "christian", "kpop", "anime", "blues", "classical","indie","jazz","soul","punk","metal","reggae","funk"]
     };
 
         this.handlePlaylist = this.handlePlaylist.bind(this);
@@ -94,7 +95,7 @@ class Select extends React.Component {
         this.setState({
             categoryClicked: true,
             categoryId: category.id,
-            categoryFilterString: 'removeCategory',
+            myCategories: ["removeCategory"],
             fetched: true
         });
         
@@ -156,8 +157,8 @@ class Select extends React.Component {
         this.state.user && 
         this.state.categories 
             ? this.state.categories.filter(category => {
-                let matchesCategory = category.name.toLowerCase().includes(
-                    this.state.categoryFilterString.toLowerCase())
+                let matchesCategory = this.state.myCategories.includes(category.id)
+                console.log(matchesCategory)
                 return matchesCategory
             }) : []
 
