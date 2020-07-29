@@ -9,14 +9,10 @@ class App extends React.Component {
     render() {
         return (
         <div className ="App">
-            <Router>
-                <Title></Title>
+                <Title/>
+                <Select/>
+            
                 
-                <Switch>
-                    <Route exact path="/" component = {Select}/>
-
-                </Switch>
-            </Router>
             {/*Need to use React Router, show playlist selection, audio-game on different pages
             
             Click button -> store array to player props
