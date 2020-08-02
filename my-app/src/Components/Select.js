@@ -25,7 +25,7 @@ class Select extends React.Component {
             renderTimer: false,
             category: "",
             fetched: false,
-            myCategories: ["hiphop", "pop", "toplists", "country", "rock", "rnb", "alternative", "dance", "decades", "christian", "kpop", "anime", "blues", "classical","indie","jazz","soul","punk","metal","reggae","funk"],
+            myCategories: ["hiphop", "pop", "toplists", "country", "rock", "rnb", "alternative", "dance", "decades", "christian", "kpop", "blues", "classical","indie","jazz","soul","punk","metal","reggae","funk"],
             gameOver:false
     };
 
@@ -185,13 +185,13 @@ class Select extends React.Component {
                 </p>   
 
             {
-                <div>
+                <div id = "game">
                     {!this.state.clicked ? <Directions></Directions> : null}
                     {!this.state.renderTimer && !this.state.gameOver && this.state.categoryClicked && this.state.clicked ? <div>Game starts in...<Timer limit={3} ></Timer></div> : null}
                     {this.state.categoryClicked && this.state.clicked && this.state.renderTimer? <Timer limit={120} myTimer/> : null}
                     {!this.state.renderTimer && this.state.gameOver ? <div> Game over! </div> : null}
                     {this.state.clicked && this.state.renderPlayer ? <Player elementId = "myPlayer" selectedPlaylist = {this.state.songsList}/> : null}
-                    {!this.state.categoryClicked && <h3 id = "instruct"> Select a category:  </h3> }
+                    {!this.state.categoryClicked && <h3> Select a category:  </h3> }
                     {this.state.categoryClicked && this.state.isEmptyState && <h3 id ="instruct"> Select a playlist:  </h3> }
                    
                 </div>

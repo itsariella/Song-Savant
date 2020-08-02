@@ -125,7 +125,7 @@ export default class Player extends React.Component {
             } 
             
      
-            return [<h2> Score: {this.state.score} / {this.state.totalCount} </h2>, 
+            return [<h2> Score: {this.state.score} </h2>, 
                     <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
                         {(e) => this.nextTrack(e,songs)}> {console.log(this.state.currentSongUrl)}
                     </audio>, 
