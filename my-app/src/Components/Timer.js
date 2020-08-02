@@ -100,12 +100,13 @@ render() {
           size={75}
           strokeWidth={7}
           colors={[
-            ['#004777', 0.33],
-            ['#F7B801', 0.33],
-            ['#A30000', 0.33],
+            ['#0cf514', 0.33],
+            ['#fa9d2a', 0.33],
+            ['#f2340f', 0.33],
           ]}
         >
-          {({ remainingTime }) => remainingTime}
+          
+          {({ remainingTime }) => this.formatTimeLeft(remainingTime)}
     </CountdownCircleTimer>
     </div>
     
