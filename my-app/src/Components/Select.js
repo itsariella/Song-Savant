@@ -3,7 +3,7 @@ import queryString from 'query-string';
 import Timer from './Timer';
 import Card from './Card';
 import Player from './Player';
-import Filter from './Filter';
+import Title from './Title'
 import Directions from './Directions';
 import '../App.css';
 
@@ -25,7 +25,7 @@ class Select extends React.Component {
             renderTimer: false,
             category: "",
             fetched: false,
-            myCategories: ["hiphop", "pop", "toplists", "country", "rock", "rnb", "alternative", "dance", "decades", "christian", "kpop", "anime", "blues", "classical","indie","jazz","soul","punk","metal","reggae","funk"],
+            myCategories: ["hiphop", "pop", "toplists", "country", "rock", "rnb", "alternative", "dance", "decades", "christian", "kpop", "blues", "classical","indie","jazz","soul","punk","metal","reggae","funk"],
             gameOver:false
     };
 
@@ -175,23 +175,24 @@ class Select extends React.Component {
         return (
         <div>
             {this.state.user ?
+            [<Title/>,
             <div>
                 <p>
-                    <h1>
+                    <h1 id="welcome">
                         Welcome, {this.state.user.name.split(" ").shift()}! 
                         {console.log(this.state.user)}
                     </h1>
                 </p>   
 
             {
-                <div>
+                <div id = "game">
                     {!this.state.clicked ? <Directions></Directions> : null}
                     {!this.state.renderTimer && !this.state.gameOver && this.state.categoryClicked && this.state.clicked ? <div>Game starts in...<Timer limit={3} ></Timer></div> : null}
                     {this.state.categoryClicked && this.state.clicked && this.state.renderTimer? <Timer limit={120} myTimer/> : null}
                     {!this.state.renderTimer && this.state.gameOver ? <div> Game over! </div> : null}
                     {this.state.clicked && this.state.renderPlayer ? <Player elementId = "myPlayer" selectedPlaylist = {this.state.songsList}/> : null}
                     {!this.state.categoryClicked && <h3> Select a category:  </h3> }
-                    {this.state.categoryClicked && this.state.isEmptyState && <h3> Select a playlist:  </h3> }
+                    {this.state.categoryClicked && this.state.isEmptyState && <h3 id ="instruct"> Select a playlist:  </h3> }
                    
                 </div>
             }
@@ -221,7 +222,7 @@ class Select extends React.Component {
                     <Card card={playlist} />
                 </button>
             ) : console.log("unclicked")} 
-            </div> : [<img src={require("../images/Song-SavantLogo.png")}/>, <button id="signIn" onClick={() => {
+            </div>] : [<img id ="logo" src={require("../images/Song-SavantLogo.png")}/>, <button id="signIn" onClick={() => {
             window.location = window.location.href.includes('localhost') 
               ? 'http://localhost:8888/login' 
               : 'heroku link here' }

@@ -19,6 +19,8 @@ export default class Player extends React.Component {
         this.randomNumber = this.randomNumber.bind(this);
         this.myInput = React.createRef();
         this.arrNums = [];
+        this.known = [];
+        this.missed = [];
     } 
 
     /*Generates a random number between min to max*/
@@ -66,11 +68,15 @@ export default class Player extends React.Component {
         
         if(this.myInput.value.normalize("NFD").toLowerCase().replace(/[.,'/?#!$%^&*;:{}=_`~\s]/g,"").trim() === matchesSong)
         {
-            this.setState(
-                {score: this.state.score + 1,
+            this.known.push(this.state.currentSongName);
+            this.setState({
+                score: this.state.score + 1,
                 correct: true
             
             }, () => console.log(this.state.score));
+        } 
+        else {
+            this.missed.push(this.state.currentSongName);
         }
         this.myInput.value = "";
         console.log(this.myInput.value);
@@ -84,7 +90,8 @@ export default class Player extends React.Component {
             
         }, () => console.log(songs[myCount].name))
 
-        console.log("nextTrack done")
+        console.log(this.known);
+        console.log(this.missed)
     }
 
     handleAudio(songs) {
@@ -125,7 +132,7 @@ export default class Player extends React.Component {
             } 
             
      
-            return [<h2> Score: {this.state.score} / {this.state.totalCount} </h2>, 
+            return [<h2> Score: {this.state.score} </h2>, 
                     <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
                         {(e) => this.nextTrack(e,songs)}> {console.log(this.state.currentSongUrl)}
                     </audio>, 

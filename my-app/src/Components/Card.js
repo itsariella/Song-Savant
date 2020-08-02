@@ -6,7 +6,7 @@ export default class Card extends React.Component {
         return(
             <div>
                 
-                <img src={card.imageUrl} style={{width: '150px', height: '150px'}}/>
+                <img id = "prevImg" src={card.imageUrl} style={{width: '150px', height: '150px'}}/>
 
                 <h3> {this.props.card.name} </h3>
             </div>
