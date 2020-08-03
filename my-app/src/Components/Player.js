@@ -13,6 +13,7 @@ export default class Player extends React.Component {
           score: 0,
           correct: false,
           submitted: false,
+          gameOver:false,
         };
         this.handleAudio = this.handleAudio.bind(this);
         this.nextTrack = this.nextTrack.bind(this);
@@ -22,6 +23,12 @@ export default class Player extends React.Component {
         this.known = [];
         this.missed = [];
     } 
+
+    componentDidMount() {
+        setTimeout(function() {
+            this.setState({gameOver: true})
+        }.bind(this),120000)
+    }
 
     /*Generates a random number between min to max*/
     randomNumber(min, max) {  
@@ -133,20 +140,44 @@ export default class Player extends React.Component {
             
      
             return [<h2> Score: {this.state.score} </h2>, 
-                    <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
-                        {(e) => this.nextTrack(e,songs)}> {console.log(this.state.currentSongUrl)}
-                    </audio>, 
-                    <div> {
-                    <form onSubmit = {(e) => this.nextTrack(e,songs)}>
-                        <input
-                            ref={input => {this.myInput = input;}} 
-                            placeholder="Enter song name"
-                            autoFocus>
+                    <div> { !this.state.gameOver ?
+                        <div>
+                            <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
+                                {(e) => this.nextTrack(e,songs)}> {console.log(this.state.currentSongUrl)}
+                            </audio>
+                            <form onSubmit = {(e) => this.nextTrack(e,songs)}>
+                                <input
+                                    ref={input => {this.myInput = input;}} 
+                                    placeholder="Enter song name"
+                                    autoFocus>
 
-                        </input>
-                        <button type="submit"> submit </button>
-                    </form>} 
-                    </div>, <div>{this.state.submitted? this.state.correct ? <h5> Good job!</h5>: <h5> Not quite... </h5> : null}</div>, this.state.submitted? <h4> Previous song:  {this.state.previousSongName} </h4> : null
+                                </input>
+                                <button type="submit"> submit </button>
+                            </form> 
+                            <div>{this.state.submitted? this.state.correct ? 
+                                <h5> Good job!</h5>: <h5> Not quite... </h5> : null}
+                            </div>
+                            <div> { this.state.submitted ? 
+                                <h4> Previous song:  {this.state.previousSongName} </h4> : null } 
+                            </div>
+                        </div>  : null} 
+                    </div>,
+                    
+                    <div> {this.state.gameOver? 
+                        <div>
+                        <h3> Songs you knew </h3>
+                        <ul className = "list"> {this.known.map((song) => (
+                            <li> {song}</li>
+                         ))}
+                        </ul>
+                        <h3> Songs you missed </h3>
+                        <ul className = "list"> {this.missed.map((song) => (
+                            <li> {song}</li>
+                         ))}
+                        </ul> 
+                        </div>: null }
+                    
+                    </div>
                     ]
             
         }
