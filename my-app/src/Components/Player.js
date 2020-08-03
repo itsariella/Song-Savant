@@ -48,8 +48,11 @@ export default class Player extends React.Component {
     nextTrack(e,songs) {
         e.preventDefault();
         let myCount = this.randomNumber(0,songs.length-1)
-        console.log(myCount)
         let matchesSong = this.state.currentSongName.normalize("NFD").toLowerCase().replace(/[.,'/?#!$%^&*;:{}=_`~\s]/g,"")
+        matchesSong = matchesSong.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        let input = this.myInput.value.normalize("NFD").toLowerCase().replace(/[.,'/?#!$%^&*;:{}=_`~\s]/g,"").trim();
+        input = input.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+
         this.setState({correct: false, submitted: true})
     
         if(songs.length > 0)
@@ -73,7 +76,7 @@ export default class Player extends React.Component {
             matchesSong = matchesSong.split('-')[0].trim();
         }
         
-        if(this.myInput.value.normalize("NFD").toLowerCase().replace(/[.,'/?#!$%^&*;:{}=_`~\s]/g,"").trim() === matchesSong)
+        if( input === matchesSong)
         {
             this.known.push(this.state.currentSongName);
             this.setState({

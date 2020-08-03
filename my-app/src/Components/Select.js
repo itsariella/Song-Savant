@@ -130,7 +130,8 @@ class Select extends React.Component {
                                 .map(item => item.track)  
                                 .map((trackData) => ({
                                 name: trackData.name,
-                                url: trackData.preview_url
+                                url: trackData.preview_url,
+                                artists: trackData.artists
                             }))                  
                         })
                         return playlists
@@ -142,7 +143,7 @@ class Select extends React.Component {
                         return {
                             name: item.name,
                             imageUrl: item.images[0].url,
-                            songs: item.trackDatas
+                            songs: item.trackDatas,
                         }
                     })
                 }))
@@ -189,7 +190,7 @@ class Select extends React.Component {
                     {!this.state.clicked ? <Directions></Directions> : null}
                     {!this.state.renderTimer && !this.state.gameOver && this.state.categoryClicked && this.state.clicked ? <div>Game starts in...<Timer limit={3} ></Timer></div> : null}
                     {this.state.categoryClicked && this.state.clicked && this.state.renderTimer? <Timer limit={120} myTimer/> : null}
-                    {!this.state.renderTimer && this.state.gameOver ? <div> Game over! </div> : null}
+                    {!this.state.renderTimer && this.state.gameOver ? <div> <div>Game over!</div> <button> Play Again </button> <button> Different Playlist</button></div> : null}
                     {this.state.clicked && this.state.renderPlayer ? <Player elementId = "myPlayer" selectedPlaylist = {this.state.songsList}/> : null}
                     {!this.state.categoryClicked && <h3> Select a category:  </h3> }
                     {this.state.categoryClicked && this.state.isEmptyState && <h3 id ="instruct"> Select a playlist:  </h3> }
