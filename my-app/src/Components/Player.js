@@ -1,4 +1,6 @@
 import React from "react"
+import Sidebar from "react-sidebar";
+import '../App.css';
 
 export default class Player extends React.Component {
 
@@ -142,7 +144,8 @@ export default class Player extends React.Component {
             } 
             
      
-            return [<h2> Score: {this.state.score} </h2>, 
+            return [
+                    <h2> Score: {this.state.score} </h2>, 
                     <div> { !this.state.gameOver ?
                         <div>
                             <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
@@ -150,6 +153,7 @@ export default class Player extends React.Component {
                             </audio>
                             <form onSubmit = {(e) => this.nextTrack(e,songs)}>
                                 <input
+                                    type = "text"
                                     ref={input => {this.myInput = input;}} 
                                     placeholder="Enter song name"
                                     autoFocus>
@@ -167,17 +171,22 @@ export default class Player extends React.Component {
                     </div>,
                     
                     <div> {this.state.gameOver? 
-                        <div>
-                        <h3> Songs you knew </h3>
-                        <ul className = "list"> {this.known.map((song) => (
-                            <li> {song}</li>
-                         ))}
-                        </ul>
-                        <h3> Songs you missed </h3>
-                        <ul className = "list"> {this.missed.map((song) => (
+                        <div className = "container">
+                            <div className = "list-container">
+                                <h3> Songs you knew </h3>
+                                <ul className = "list"> {this.known.map((song) => (
+                                    <li> {song}</li>
+                                ))}
+                                </ul>
+                            </div>
+                            <div className = "list-container">
+                                <h3> Songs you missed </h3>
+                                <ul className = "list"> {this.missed.map((song) => (
                             <li> {song}</li>
                          ))}
                         </ul> 
+                            </div>
+                        
                         </div>: null }
                     
                     </div>

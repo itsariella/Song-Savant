@@ -73,7 +73,8 @@ class Select extends React.Component {
             clicked: true,
             isEmptyState: false,
             songsList: playlist.songs,
-            playlists: [playlist]
+            chosenPlaylist: playlist,
+            playlists: []
         });
 
         setTimeout(function() { //Start the timer
@@ -177,24 +178,48 @@ class Select extends React.Component {
         <div>
             {this.state.user ?
             [<Title/>,
-            <div>
-                <p>
-                    <h1 id="welcome">
-                        Welcome, {this.state.user.name.split(" ").shift()}! 
-                        {console.log(this.state.user)}
-                    </h1>
-                </p>   
+            <div> {!this.state.clicked ?
+             <p>
+                <h1 id="welcome">
+                    Welcome, {this.state.user.name.split(" ").shift()}! 
+                    {console.log(this.state.user)}
+                </h1>
+            </p>   
+            : this.state.gameOver ? 
+            <h1 id="welcome">
+            Nice Job, {this.state.user.name.split(" ").shift()}! 
+            {console.log(this.state.user)}
+            </h1> 
+            : null} 
+
+            {!this.state.clicked ? <Directions></Directions> : null}
 
             {
                 <div id = "game">
-                    {!this.state.clicked ? <Directions></Directions> : null}
+                    {!this.state.categoryClicked && <h3> Select a category:  </h3> }
+                    {this.state.categoryClicked && this.state.isEmptyState && <h3> Select a playlist:  </h3> }
+                </div>
+            }
+
+            { this.state.categoryClicked ? playlistToRender.map(playlist => 
+                <button className="songCard" onClick={() => this.handlePlaylist(playlist)}>
+
+                    {this.state.clicked && !this.state.isLogged ? this.setState(
+                        { 
+                            isLogged: true,
+                        }): console.log("no playlists")
+                    }
+                    <Card card={playlist} />
+                </button>
+            ) : console.log("unclicked")}
+                
+
+            {
+                <div id = "game">
                     {!this.state.renderTimer && !this.state.gameOver && this.state.categoryClicked && this.state.clicked ? <div>Game starts in...<Timer limit={3} ></Timer></div> : null}
                     {this.state.categoryClicked && this.state.clicked && this.state.renderTimer? <Timer limit={120} myTimer/> : null}
-                    {!this.state.renderTimer && this.state.gameOver ? <div> <div>Game over!</div> <button> Play Again </button> <button> Different Playlist</button></div> : null}
-                    {this.state.clicked && this.state.renderPlayer ? <Player elementId = "myPlayer" selectedPlaylist = {this.state.songsList}/> : null}
-                    {!this.state.categoryClicked && <h3> Select a category:  </h3> }
-                    {this.state.categoryClicked && this.state.isEmptyState && <h3 id ="instruct"> Select a playlist:  </h3> }
-                   
+                    {!this.state.renderTimer && this.state.gameOver ? <div> <button id = "replay"> Play Again </button> <button id = "diffPlaylist"> Different Playlist</button></div> : null}
+                    {this.state.clicked && this.state.renderPlayer ? <Player elementId = "myPlayer" playlist= {this.state.chosenPlaylist} selectedPlaylist = {this.state.songsList}/> : null} 
                 </div>
             }
             
@@ -212,17 +237,7 @@ class Select extends React.Component {
                 )
             }
             
-            { this.state.categoryClicked ? playlistToRender.map(playlist => 
-                <button className="songCard" onClick={() => this.handlePlaylist(playlist)}>
-
-                    {this.state.clicked && !this.state.isLogged ? this.setState(
-                        { 
-                            isLogged: true,
-                        }): console.log("no playlists")
-                    }
-                    <Card card={playlist} />
-                </button>
-            ) : console.log("unclicked")} 
+             
             </div>] : [<img id ="logo" src={require("../images/Song-SavantLogo.png")}/>, <button id="signIn" onClick={() => {
             window.location = window.location.href.includes('localhost') 
               ? 'http://localhost:8888/login' 

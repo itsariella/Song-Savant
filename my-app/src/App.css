@@ -84,6 +84,8 @@ a{
 
 #game {
   color:white;
+  width: 500px;
+  margin: auto;
 }
 
 #prevImg {
@@ -112,6 +114,9 @@ a{
   width: 100px;
   padding: 10px;
   justify-content: center;
+  font-size: 50px;
+  justify-content: 'space-between';
+  margin-bottom: 125px;
 
 }
 
@@ -145,5 +150,47 @@ a{
   list-style-type: none;
   margin: 0;
   padding: 0;
+}
+
+.container {
+  display:flex;
+  flex-direction: row;
+  width: 500px;
+  margin: auto;
+
+}
+
+.list-container {
+  width: 250px;
+  margin-top:0;
+  margin-bottom:30px;
+}
+
+.game-container, .audioplayer {
+  width: 250px;
+  height:250px;
+  margin: auto;
+}
+
+
+#replay {
+  border-radius:40px;
+  font-size:15px;
+  height: 30px;
+  width: 100px;
+  padding: 5px;
+}
+
+#diffPlaylist {
+  border-radius:40px;
+  font-size:15px;
+  height: 30px;
+  width: 150px;
+  padding: 5px;
+}
+
+#myPlayer {
+  margin:20px;
+  position:'relative';
 }
 

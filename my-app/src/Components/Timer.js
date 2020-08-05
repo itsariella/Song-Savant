@@ -97,8 +97,8 @@ render() {
     <CountdownCircleTimer
           isPlaying
           duration={this.state.timeLeft}
-          size={75}
-          strokeWidth={7}
+          size={200}
+          strokeWidth={12}
           colors={[
             ['#0cf514', 0.33],
             ['#fa9d2a', 0.33],
@@ -107,6 +107,7 @@ render() {
         >
           
           {({ remainingTime }) => this.formatTimeLeft(remainingTime)}
+         
     </CountdownCircleTimer>
     </div>
     
