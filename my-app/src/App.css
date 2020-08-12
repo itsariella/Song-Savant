@@ -194,3 +194,7 @@ a{
   position:'relative';
 }
 
+.player {
+  display:inline-block;
+}
+

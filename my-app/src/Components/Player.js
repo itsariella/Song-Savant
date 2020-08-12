@@ -1,5 +1,6 @@
 import React from "react"
 import Sidebar from "react-sidebar";
+import PlayTimer from './PlayTimer';
 import '../App.css';
 
 export default class Player extends React.Component {
@@ -147,10 +148,11 @@ export default class Player extends React.Component {
             return [
                     <h2> Score: {this.state.score} </h2>, 
                     <div> { !this.state.gameOver ?
-                        <div>
-                            <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
+                        <div id= "player">
+                            {/* <audio className="audioPlayer" controls autoPlay src = {this.state.currentSongUrl} onEnded=
                                 {(e) => this.nextTrack(e,songs)}> {console.log(this.state.currentSongUrl)}
-                            </audio>
+                            </audio> */}
+                            <PlayTimer song={this.state.currentSongUrl}/>
                             <form onSubmit = {(e) => this.nextTrack(e,songs)}>
                                 <input
                                     type = "text"

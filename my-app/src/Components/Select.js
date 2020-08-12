@@ -1,6 +1,7 @@
 import React from 'react';
 import queryString from 'query-string';
 import Timer from './Timer';
+import PlayTimer from './PlayTimer';
 import Card from './Card';
 import Player from './Player';
 import Title from './Title'
@@ -13,8 +14,6 @@ class Select extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            serverData: {}, 
-            songSelectedUrl: '',
             songsList: {},
             categoryClicked: false,
             clicked: false,
@@ -217,7 +216,7 @@ class Select extends React.Component {
             {
                 <div id = "game">
                     {!this.state.renderTimer && !this.state.gameOver && this.state.categoryClicked && this.state.clicked ? <div>Game starts in...<Timer limit={3} ></Timer></div> : null}
-                    {this.state.categoryClicked && this.state.clicked && this.state.renderTimer? <Timer limit={120} myTimer/> : null}
+                    {/* {this.state.categoryClicked && this.state.clicked && this.state.renderTimer? <Timer limit={120}/> : null} */}
                     {!this.state.renderTimer && this.state.gameOver ? <div> <button id = "replay"> Play Again </button> <button id = "diffPlaylist"> Different Playlist</button></div> : null}
                     {this.state.clicked && this.state.renderPlayer ? <Player elementId = "myPlayer" playlist= {this.state.chosenPlaylist} selectedPlaylist = {this.state.songsList}/> : null} 
                 </div>
